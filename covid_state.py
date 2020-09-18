@@ -14,8 +14,7 @@ import plotly.graph_objects as go
 
 
 # Florida Dept. of Health Open Data: Florida COVID19 Case Line Data
-#URL = "https://opendata.arcgis.com/datasets/f5d69a918fb747019734d9a90cd602f4_0.csv"
-URL = "https://opendata.arcgis.com/datasets/8ec01ce7236d4f20acf96371a6f4c0b7_0.csv?outSR=4326"
+URL = "https://opendata.arcgis.com/datasets/37abda537d17458bae6677b8ab75fcb9_0.csv"
 
 CSV_FILE = Path("./data/state.csv")
 
@@ -61,7 +60,7 @@ class StateCovid:
     def process(self):
         ''' whittle data down to what we are using'''
 
-        to_del = ['Jurisdiction', 'Origin', 'Travel_related', 'Case_', 'EDvisit', 'Contact', 'OBJECTID', 'Hospitalized']
+        to_del = ['Jurisdiction', 'Origin', 'Travel_related', 'Case_', 'EDvisit', 'Contact', 'Hospitalized']
         for col in to_del:
             self.df.drop(col, axis=1, inplace=True)
 
@@ -89,6 +88,9 @@ class StateCovid:
         # First Resample to weekly to smooth out trajectory
         self.case_counts.set_index('Date', inplace=True)
         r = self.case_counts.resample('W-MON')
+
+
+
         self.week = pd.DataFrame()
         self.week['Total Cases'] = r['Total Cases'].last()
         self.week['New Cases'] = r['New Cases'].sum()
@@ -98,6 +100,12 @@ class StateCovid:
 
         # Drop some eliminate wild fluctuation in early data trajectory
         self.week = self.week.iloc[3:]
+
+        # Drop incomplete current week
+        df = self.week
+        if df.index[-1].strftime ('%d%m%Y') >= dt.datetime.today().strftime ('%d%m%Y'):
+                df.drop([df.index[-1]], inplace=True)
+
 
 
 
@@ -121,10 +129,10 @@ class StateCovid:
         fig.show()
 
     def trajectory(self):
-        ''' Total Cases v Date linear '''
 
+        ''' Total Cases v Date linear '''
         # Drop Dates where Total Cases where beloew 50
-        df = self.case_counts[self.case_counts['Total Cases'] >= 50]
+        df = self.week
         fig = go.Figure()
         fig.add_trace(go.Scatter(name='Total Cases', mode='lines',
                                  x=df.index, y=df['Total Cases'],
@@ -144,7 +152,7 @@ class StateCovid:
 
 
 
-
+        ''' Trajectory Logrithmic '''
         fig = go.Figure()
         fig.add_trace(go.Scatter(name='Florida', mode='lines+markers',
                                  x=self.week['Total Cases'], y=self.week['New Cases'],
@@ -166,13 +174,10 @@ class StateCovid:
         today = dt.date.today()
         df = self.week
 
-        if csv_date == today:
-            x = df.index
-            y = df['Growth Factor']
-        else:
-            # Drop incomplete week
-            x = df.index[:-1]
-            y = df['Growth Factor'][:-1]
+
+        x = df.index
+        y = df['Growth Factor']
+
 
         fig = go.Figure()
         fig.add_trace(go.Scatter(name='Growth Factor', mode='lines+markers',
