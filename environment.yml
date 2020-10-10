@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - pandas
-  - arcgis.gis
+  - arcgis
   - pathlib
   - plotly
   - cufflinks
