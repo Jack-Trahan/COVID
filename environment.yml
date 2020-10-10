@@ -1,7 +1,9 @@
 name: COVIDenv
 channels:
   - conda-forge
+  - esri
 dependencies:
   - pandas
   - pathlib
   - plotly
+  - arcgis
