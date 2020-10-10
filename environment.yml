@@ -6,4 +6,3 @@ dependencies:
   - arcgis
   - pathlib
   - plotly
-  - cufflinks
