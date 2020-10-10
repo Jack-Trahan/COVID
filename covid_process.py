@@ -19,8 +19,8 @@ import plotly.express as px
 #from plotly.subplots import make_subplots
 import plotly.io as pio
 pio.renderers.default = "notebook"
-import cufflinks as cf
-cf.go_offline()
+#import cufflinks as cf
+#cf.go_offline()
 
 
 
