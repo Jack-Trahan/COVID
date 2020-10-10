@@ -1,0 +1,9 @@
+name: COVIDenv
+channels:
+  - conda-forge
+dependencies:
+  - pandas
+  - arcgis.gis
+  - pathlib
+  - plotly
+  - cufflinks
